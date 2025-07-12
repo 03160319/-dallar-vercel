@@ -1,9 +1,10 @@
+// /api/extract.js
 import axios from 'axios';
-import * as cheerio from 'cheerio';
+import cheerio from 'cheerio';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'Only POST requests allowed' });
   }
 
   const { url } = req.body;
@@ -13,9 +14,12 @@ export default async function handler(req, res) {
 
   try {
     const response = await axios.get(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0' },
+      headers: {
+        'User-Agent': 'Mozilla/5.0'
+      }
     });
-    const $ = cheerio.load(response.data);
+    const html = response.data;
+    const $ = cheerio.load(html);
 
     const title = $('meta[property="og:title"]').attr('content') || '';
     const image = $('meta[property="og:image"]').attr('content') || '';
